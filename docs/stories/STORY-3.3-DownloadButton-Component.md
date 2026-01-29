@@ -2,7 +2,7 @@
 
 **Story ID**: STORY-3.3
 **Epic**: EPIC-03 (Frontend Minimalista)
-**Status**: Draft
+**Status**: In Progress
 **Priority**: P0 (Must-Have)
 **Sprint**: Sprint 3
 **Assigned to**: @dev (Dex)
@@ -306,4 +306,4 @@ DownloadButton.propTypes = {
 ---
 
 **Created**: 2026-01-29
-**Status**: Draft → Ready for Dev → In Progress → Complete
+**Status**: In Progress → Ready for Dev → In Progress → Complete
