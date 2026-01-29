@@ -8,10 +8,10 @@ Este diretório contém os **4 epics principais** que estruturam o desenvolvimen
 
 | Epic ID | Nome | Sprint | Duração | Status | Owner |
 |---------|------|--------|---------|--------|-------|
-| **EPIC-01** | Backend Core + Auto-Detection | Sprint 1 | 1 semana (5 dias) | Not Started | @dev |
-| **EPIC-02** | API Layer Simplificada | Sprint 2 | 3-4 dias | Not Started | @dev |
-| **EPIC-03** | Frontend Minimalista | Sprint 3 | 3-4 dias | Not Started | @dev |
-| **EPIC-04** | Docker + Deployment | Sprint 4 | 2-3 dias | Not Started | @devops |
+| **EPIC-01** | Backend Core + Auto-Detection | Sprint 1 | 1 semana (5 dias) | ✅ Completed | @dev |
+| **EPIC-02** | API Layer Simplificada | Sprint 2 | 3-4 dias | ⏳ In Progress | @dev |
+| **EPIC-03** | Frontend Minimalista | Sprint 3 | 3-4 dias | ⏳ In Progress | @dev |
+| **EPIC-04** | Docker + Deployment | Sprint 4 | 2-3 dias | ⏳ Ready | @devops |
 
 **Total Timeline**: **2-3 semanas** (14-18 dias úteis)
 
@@ -115,12 +115,12 @@ Este diretório contém os **4 epics principais** que estruturam o desenvolvimen
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  Sprint 1: Backend Core        [████████░░] 0/7 stories     │
-│  Sprint 2: API Layer           [██░░░░░░░░] 0/4 stories     │
-│  Sprint 3: Frontend            [░░░░░░░░░░] 0/4 stories     │
-│  Sprint 4: Docker              [░░░░░░░░░░] 0/4 stories     │
+│  Sprint 1: Backend Core        [██████████] 7/7 stories     │
+│  Sprint 2: API Layer           [████░░░░░░] 2/4 stories     │
+│  Sprint 3: Frontend            [████░░░░░░] 2/4 stories     │
+│  Sprint 4: Docker              [██░░░░░░░░] 1/4 stories     │
 │  ───────────────────────────────────────────────────────    │
-│  Total: 0/19 stories completed (0%)                         │
+│  Total: 12/19 stories completed (63%)                       │
 └─────────────────────────────────────────────────────────────┘
 ```
 

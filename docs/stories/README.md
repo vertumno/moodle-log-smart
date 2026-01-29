@@ -10,13 +10,13 @@ Este diretório contém todas as **user stories** detalhadas do projeto, organiz
 
 | Story ID | Nome | Estimate | Status | File |
 |----------|------|----------|--------|------|
-| **STORY-1.1** | Auto-Detection de Encoding e Delimiter | 1 dia | Not Started | [📄](./STORY-1.1-Auto-Detection-CSV-Format.md) |
-| **STORY-1.2** | Auto-Mapeamento de Colunas Moodle | 1 dia | Not Started | [📄](./STORY-1.2-Auto-Mapping-Moodle-Columns.md) |
-| **STORY-1.3** | Auto-Detection de Formato de Timestamp | 1 dia | Not Started | [📄](./STORY-1.3-Auto-Detection-Timestamp-Format.md) |
-| **STORY-1.4** | Data Cleaning com Configuração Default | 1 dia | Not Started | [📄](./STORY-1.4-to-1.7-Remaining-Epic01.md#story-14) |
-| **STORY-1.5** | Rule Engine + 13 Regras Bloom | 2 dias | Not Started | [📄](./STORY-1.4-to-1.7-Remaining-Epic01.md#story-15) |
-| **STORY-1.6** | Export Multi-Formato (CSV + XES) | 1 dia | Not Started | [📄](./STORY-1.4-to-1.7-Remaining-Epic01.md#story-16) |
-| **STORY-1.7** | ZIP Packager | 0.5 dia | Not Started | [📄](./STORY-1.4-to-1.7-Remaining-Epic01.md#story-17) |
+| **STORY-1.1** | Auto-Detection de Encoding e Delimiter | 1 dia | ✅ Completed | [📄](./STORY-1.1-Auto-Detection-CSV-Format.md) |
+| **STORY-1.2** | Auto-Mapeamento de Colunas Moodle | 1 dia | ✅ Completed | [📄](./STORY-1.2-Auto-Mapping-Moodle-Columns.md) |
+| **STORY-1.3** | Auto-Detection de Formato de Timestamp | 1 dia | ✅ Completed | [📄](./STORY-1.3-Auto-Detection-Timestamp-Format.md) |
+| **STORY-1.4** | Data Cleaning com Configuração Default | 1 dia | ✅ Completed | [📄](./STORY-1.4-to-1.7-Remaining-Epic01.md#story-14) |
+| **STORY-1.5** | Rule Engine + 13 Regras Bloom | 2 dias | ✅ Completed | [📄](./STORY-1.4-to-1.7-Remaining-Epic01.md#story-15) |
+| **STORY-1.6** | Export Multi-Formato (CSV + XES) | 1 dia | ✅ Completed | [📄](./STORY-1.4-to-1.7-Remaining-Epic01.md#story-16) |
+| **STORY-1.7** | ZIP Packager | 0.5 dia | ✅ Completed | [📄](./STORY-1.4-to-1.7-Remaining-Epic01.md#story-17) |
 
 **Total Sprint 1**: 7.5 dias → **7 story points** (arredondado)
 
@@ -150,15 +150,15 @@ Use esta checklist para validar cada story antes de marcar como "Done":
 ### Sprint 1 Progress
 
 ```
-Story 1.1: [░░░░░░░░░░] 0% (Not Started)
-Story 1.2: [░░░░░░░░░░] 0% (Not Started)
-Story 1.3: [░░░░░░░░░░] 0% (Not Started)
-Story 1.4: [░░░░░░░░░░] 0% (Not Started)
-Story 1.5: [░░░░░░░░░░] 0% (Not Started)
-Story 1.6: [░░░░░░░░░░] 0% (Not Started)
-Story 1.7: [░░░░░░░░░░] 0% (Not Started)
+Story 1.1: [██████████] 100% (✅ Completed)
+Story 1.2: [██████████] 100% (✅ Completed)
+Story 1.3: [██████████] 100% (✅ Completed)
+Story 1.4: [██████████] 100% (✅ Completed)
+Story 1.5: [██████████] 100% (✅ Completed)
+Story 1.6: [██████████] 100% (✅ Completed)
+Story 1.7: [██████████] 100% (✅ Completed)
 ────────────────────────────────────────
-Total: 0/7 stories (0%) | 0/7.5 days
+Total: 7/7 stories (100%) | 7.5/7.5 days
 ```
 
 ### Velocity Metrics
