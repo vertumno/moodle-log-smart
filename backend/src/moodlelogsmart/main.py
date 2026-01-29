@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Optional
 import tempfile
 import zipfile
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks, Depends, Request
 from fastapi.responses import FileResponse
@@ -83,6 +83,10 @@ async def startup_event():
     logger.info("MoodleLogSmart API starting up")
     TEMP_DIR.mkdir(parents=True, exist_ok=True)
 
+    # Start cleanup background task
+    asyncio.create_task(cleanup_old_jobs())
+    logger.info("Cleanup task started (runs every hour)")
+
 
 @app.get("/health")
 async def health_check():
@@ -134,9 +138,9 @@ async def upload_csv(
         job_manager.set_input_file(job_id, temp_input)
         logger.info(f"Job {job_id}: Received {file_size_mb:.2f}MB CSV file")
 
-        # Start background processing
+        # Start background processing with timeout
         background_tasks.add_task(
-            process_job, job_id, str(temp_input)
+            process_job_with_timeout, job_id, str(temp_input)
         )
 
         return UploadResponse(job_id=job_id, status="processing")
@@ -219,6 +223,87 @@ async def download_results(
         media_type="application/zip",
         filename=job.output_file.name,
     )
+
+
+# Configuration for cleanup and timeout
+JOB_TIMEOUT_SECONDS = int(os.getenv("JOB_TIMEOUT_SECONDS", "600"))  # 10 minutes
+CLEANUP_INTERVAL_SECONDS = int(os.getenv("CLEANUP_INTERVAL_SECONDS", "3600"))  # 1 hour
+TTL_COMPLETED_HOURS = int(os.getenv("TTL_COMPLETED_HOURS", "24"))  # 24 hours
+TTL_FAILED_HOURS = int(os.getenv("TTL_FAILED_HOURS", "1"))  # 1 hour
+
+
+async def process_job_with_timeout(job_id: str, input_file: str) -> None:
+    """Process job with timeout protection.
+
+    Args:
+        job_id: Job identifier
+        input_file: Path to input CSV
+
+    Timeout: Configurable via JOB_TIMEOUT_SECONDS (default: 600s = 10 min)
+    """
+    try:
+        await asyncio.wait_for(
+            process_job(job_id, input_file),
+            timeout=float(JOB_TIMEOUT_SECONDS)
+        )
+    except asyncio.TimeoutError:
+        logger.error(f"Job {job_id} timed out after {JOB_TIMEOUT_SECONDS}s")
+        job_manager.mark_failed(
+            job_id,
+            f"Processing timeout ({JOB_TIMEOUT_SECONDS // 60} minutes)"
+        )
+    except Exception as e:
+        logger.error(f"Job {job_id} failed: {e}", exc_info=True)
+        job_manager.mark_failed(job_id, str(e))
+
+
+async def cleanup_old_jobs() -> None:
+    """Periodic cleanup of old jobs and files.
+
+    Runs every hour (configurable). Cleans up:
+    - Completed jobs older than TTL_COMPLETED_HOURS (default: 24h)
+    - Failed jobs older than TTL_FAILED_HOURS (default: 1h)
+    - Associated files (input and output)
+    """
+    while True:
+        try:
+            await asyncio.sleep(CLEANUP_INTERVAL_SECONDS)
+
+            now = datetime.now()
+            jobs_to_clean = []
+
+            for job_id, job in list(job_manager.jobs.items()):
+                if not job.completed_at:
+                    continue  # Skip active jobs
+
+                age = now - job.completed_at
+
+                # Check if TTL expired
+                should_clean = False
+                reason = ""
+                if job.status == "completed":
+                    if age > timedelta(hours=TTL_COMPLETED_HOURS):
+                        should_clean = True
+                        reason = f"Completed job older than {TTL_COMPLETED_HOURS}h"
+                elif job.status == "failed":
+                    if age > timedelta(hours=TTL_FAILED_HOURS):
+                        should_clean = True
+                        reason = f"Failed job older than {TTL_FAILED_HOURS}h"
+
+                if should_clean:
+                    jobs_to_clean.append((job_id, reason))
+
+            # Clean up identified jobs
+            for job_id, reason in jobs_to_clean:
+                logger.info(f"Cleaning up job {job_id}: {reason}")
+                job_manager.cleanup_job(job_id)
+                del job_manager.jobs[job_id]
+
+            if jobs_to_clean:
+                logger.info(f"Cleanup: Removed {len(jobs_to_clean)} old jobs")
+
+        except Exception as e:
+            logger.error(f"Cleanup task error: {e}", exc_info=True)
 
 
 async def process_job(job_id: str, input_file: str) -> None:
@@ -327,6 +412,16 @@ async def process_job(job_id: str, input_file: str) -> None:
     except Exception as e:
         logger.error(f"Job {job_id}: Processing failed: {str(e)}", exc_info=True)
         job_manager.mark_failed(job_id, str(e))
+
+    finally:
+        # ALWAYS delete input file after processing (success or failure)
+        input_path = Path(input_file)
+        if input_path.exists():
+            try:
+                input_path.unlink()
+                logger.debug(f"Job {job_id}: Deleted input file")
+            except Exception as e:
+                logger.warning(f"Job {job_id}: Failed to delete input: {e}")
 
 
 if __name__ == "__main__":

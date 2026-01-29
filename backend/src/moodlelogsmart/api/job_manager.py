@@ -134,23 +134,47 @@ class JobManager:
         return job.owner == owner
 
     def cleanup_job(self, job_id: str) -> None:
-        """Clean up job files and remove from memory.
+        """Clean up job files (input, output, and directories).
 
         Args:
             job_id: Job identifier
         """
         job = self.get_job(job_id)
-        if job:
-            # Delete temporary files
-            if job.input_file and job.input_file.exists():
-                try:
-                    job.input_file.unlink()
-                    logger.debug(f"Deleted input file: {job.input_file}")
-                except Exception as e:
-                    logger.warning(f"Failed to delete input file: {e}")
+        if not job:
+            return
 
-            # Keep output file for download, but mark for cleanup after retention period
-            logger.info(f"Job {job_id} cleaned up")
+        files_deleted = 0
+
+        # Delete input file (if still exists)
+        if job.input_file and job.input_file.exists():
+            try:
+                job.input_file.unlink()
+                files_deleted += 1
+                logger.debug(f"Deleted input file: {job.input_file}")
+            except Exception as e:
+                logger.warning(f"Failed to delete input file: {e}")
+
+        # Delete output file (ZIP)
+        if job.output_file and job.output_file.exists():
+            try:
+                job.output_file.unlink()
+                files_deleted += 1
+                logger.debug(f"Deleted output file: {job.output_file}")
+            except Exception as e:
+                logger.warning(f"Failed to delete output file: {e}")
+
+        # Delete output directory if exists
+        import tempfile
+        import shutil
+        output_dir = Path(tempfile.gettempdir()) / "moodlelogsmart" / f"{job_id}_output"
+        if output_dir.exists():
+            try:
+                shutil.rmtree(output_dir)
+                logger.debug(f"Deleted output directory: {output_dir}")
+            except Exception as e:
+                logger.warning(f"Failed to delete output directory: {e}")
+
+        logger.info(f"Job {job_id} cleanup complete ({files_deleted} files deleted)")
 
 
 # Global job manager instance
