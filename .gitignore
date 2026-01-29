@@ -1,0 +1,79 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Poetry
+poetry.lock
+.poetry/
+
+# Node
+node_modules/
+package-lock.json
+yarn.lock
+.npm
+dist/
+build/
+*.tsbuildinfo
+.next/
+out/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.env
+.env.local
+.env.*.local
+
+# Project specific
+/uploads/
+/processing/
+/results/
+/temp/
+*.csv
+*.xes
+*.zip
+results_*.zip
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Build
+dist/
+build/
+*.egg-info/
