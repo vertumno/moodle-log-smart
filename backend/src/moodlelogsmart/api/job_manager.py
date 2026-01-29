@@ -22,6 +22,7 @@ class Job:
     completed_at: Optional[datetime] = None
     input_file: Optional[Path] = None
     output_file: Optional[Path] = None
+    owner: Optional[str] = None  # Hashed API key for ownership
 
 
 class JobManager:
@@ -104,6 +105,33 @@ class JobManager:
         job = self.get_job(job_id)
         if job:
             job.input_file = file_path
+
+    def set_owner(self, job_id: str, owner: str) -> None:
+        """Set job owner (hashed API key).
+
+        Args:
+            job_id: Job identifier
+            owner: Hashed API key
+        """
+        job = self.get_job(job_id)
+        if job:
+            job.owner = owner
+            logger.debug(f"Job {job_id} owner set to {owner}")
+
+    def verify_ownership(self, job_id: str, owner: str) -> bool:
+        """Verify job ownership.
+
+        Args:
+            job_id: Job identifier
+            owner: Hashed API key to check
+
+        Returns:
+            True if owner matches, False otherwise
+        """
+        job = self.get_job(job_id)
+        if not job:
+            return False
+        return job.owner == owner
 
     def cleanup_job(self, job_id: str) -> None:
         """Clean up job files and remove from memory.

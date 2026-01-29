@@ -2,18 +2,30 @@
 
 import asyncio
 import logging
+import os
 from pathlib import Path
 from typing import Optional
 import tempfile
 import zipfile
 from datetime import datetime
 
-from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks
+from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks, Depends, Request
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from moodlelogsmart.api.models import UploadResponse, StatusResponse, ErrorResponse
 from moodlelogsmart.api.job_manager import get_job_manager, Job
+from moodlelogsmart.api.auth import verify_api_key
+
+# Try to import slowapi (optional for rate limiting)
+try:
+    from slowapi import Limiter, _rate_limit_exceeded_handler
+    from slowapi.util import get_remote_address
+    from slowapi.errors import RateLimitExceeded
+    RATE_LIMITING_AVAILABLE = True
+except ImportError:
+    logger.warning("slowapi not installed - rate limiting disabled")
+    RATE_LIMITING_AVAILABLE = False
 from moodlelogsmart.core.auto_detect.csv_detector import CSVDetector
 from moodlelogsmart.core.auto_detect.column_mapper import ColumnMapper
 from moodlelogsmart.core.auto_detect.timestamp_detector import TimestampDetector
@@ -30,14 +42,32 @@ app = FastAPI(
     version="0.1.0",
 )
 
+# Configure rate limiting (if available)
+if RATE_LIMITING_AVAILABLE:
+    limiter = Limiter(key_func=get_remote_address)
+    app.state.limiter = limiter
+    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+    logger.info("Rate limiting enabled")
+else:
+    limiter = None
+
+# Load allowed origins from environment
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:5173").split(",")
+
+if "*" in ALLOWED_ORIGINS:
+    logger.warning("⚠️ CORS wildcard detected! Not recommended for production")
+
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, restrict to specific domains
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type", "X-API-Key"],
+    max_age=3600,
 )
+
+logger.info(f"CORS configured for origins: {ALLOWED_ORIGINS}")
 
 # Get job manager
 job_manager = get_job_manager()
@@ -62,7 +92,10 @@ async def health_check():
 
 @app.post("/api/upload", response_model=UploadResponse)
 async def upload_csv(
-    file: UploadFile = File(...), background_tasks: BackgroundTasks = BackgroundTasks()
+    request: Request,
+    file: UploadFile = File(...),
+    background_tasks: BackgroundTasks = BackgroundTasks(),
+    api_key_id: str = Depends(verify_api_key)
 ) -> UploadResponse:
     """Upload CSV file for processing.
 
@@ -82,6 +115,7 @@ async def upload_csv(
 
     # Create job
     job_id = job_manager.create_job()
+    job_manager.set_owner(job_id, api_key_id)
 
     try:
         # Save uploaded file temporarily
@@ -117,7 +151,10 @@ async def upload_csv(
 
 
 @app.get("/api/status/{job_id}", response_model=StatusResponse)
-async def get_status(job_id: str) -> StatusResponse:
+async def get_status(
+    job_id: str,
+    api_key_id: str = Depends(verify_api_key)
+) -> StatusResponse:
     """Get job processing status.
 
     Args:
@@ -133,6 +170,10 @@ async def get_status(job_id: str) -> StatusResponse:
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
 
+    # Verify ownership
+    if not job_manager.verify_ownership(job_id, api_key_id):
+        raise HTTPException(status_code=403, detail="Access denied: not your job")
+
     return StatusResponse(
         job_id=job.job_id,
         status=job.status,
@@ -144,7 +185,10 @@ async def get_status(job_id: str) -> StatusResponse:
 
 
 @app.get("/api/download/{job_id}")
-async def download_results(job_id: str):
+async def download_results(
+    job_id: str,
+    api_key_id: str = Depends(verify_api_key)
+):
     """Download processed results as ZIP.
 
     Args:
@@ -159,6 +203,10 @@ async def download_results(job_id: str):
     job = job_manager.get_job(job_id)
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
+
+    # Verify ownership
+    if not job_manager.verify_ownership(job_id, api_key_id):
+        raise HTTPException(status_code=403, detail="Access denied: not your job")
 
     if job.status != "completed":
         raise HTTPException(status_code=400, detail=f"Job status is {job.status}")
