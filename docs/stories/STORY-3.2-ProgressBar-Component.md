@@ -2,7 +2,7 @@
 
 **Story ID**: STORY-3.2
 **Epic**: EPIC-03 (Frontend Minimalista)
-**Status**: Draft
+**Status**: Ready for Review
 **Priority**: P0 (Must-Have)
 **Sprint**: Sprint 3
 **Assigned to**: @dev (Dex)
@@ -249,34 +249,72 @@ ProgressBar.propTypes = {
 ## 📝 Dev Agent Record
 
 ### Checklist
-- [ ] Task 1: ProgressBar.jsx created
-- [ ] Task 2: Polling logic implemented
-- [ ] Task 3: API integration complete
-- [ ] Task 4: Status messages mapped
-- [ ] Task 5: Completion handling working
-- [ ] Task 6: Error handling working
-- [ ] Task 7: Visual feedback added
-- [ ] Task 8: All tests passing
+- [x] Task 1: ProgressBar.tsx created
+- [x] Task 2: Polling logic implemented
+- [x] Task 3: API integration complete
+- [x] Task 4: Status messages mapped
+- [x] Task 5: Completion handling working
+- [x] Task 6: Error handling working
+- [x] Task 7: Visual feedback added
+- [x] Task 8: All tests passing
 
 ### Debug Log
 [Will be updated during development]
 
 ### Completion Notes
-[Will be updated upon completion]
+✅ **Story COMPLETA** - All acceptance criteria met
+
+**Implementação:**
+- Componente TypeScript completo em `ProgressBar.tsx`
+- Props: jobId, onComplete, onError, pollInterval (default 5000ms)
+- Estados: progress, status, error, isPolling
+- Polling logic com useEffect + setInterval
+- Poll inicial imediatamente + intervalo de 5s
+- API integration GET /api/status/{jobId}
+- Status messages dinâmicas baseadas em progress %
+- Callbacks onComplete/onError
+- Stop polling quando completed ou failed
+- Cleanup de interval on unmount
+- Success state (green) e error state (red)
+- Loading spinner durante processing
+- Tailwind CSS styling
+- 11 testes unitários cobrindo todos os casos
+
+**Features Implementadas:**
+- ✅ Progress bar 0-100%
+- ✅ Polling a cada 5 segundos (configurável)
+- ✅ Status messages dinâmicas
+- ✅ Success message quando completo
+- ✅ Error message se falhar
+- ✅ Stop polling automaticamente
+- ✅ Cleanup em unmount
+- ✅ Spinner durante processing
+- ✅ Colors baseadas em status (blue/green/red)
 
 ### File List
 **Files to Create:**
-- [ ] `frontend/src/components/ProgressBar.jsx`
-- [ ] `frontend/src/components/ProgressBar.test.jsx`
+- [x] `frontend/src/components/ProgressBar.tsx` (TypeScript)
+- [x] `frontend/src/components/ProgressBar.test.tsx`
 
 **Files to Modify:**
-- [ ] `frontend/src/App.jsx` (import and use ProgressBar)
+- [x] `frontend/src/components/ProgressBar.tsx` (replaced basic version)
+- [ ] `frontend/src/App.tsx` (will be done in Story 3.4)
 
 **Files to Delete:**
-- [ ] (None)
+- (None)
 
 ### Change Log
 - Created Story 3.2 from Epic 3 specification
+- 2026-01-29: Implemented ProgressBar component with all features
+  - Polling logic (useEffect + setInterval)
+  - API integration GET /api/status/{jobId}
+  - Dynamic status messages based on progress %
+  - Success/error states with appropriate colors
+  - Loading spinner
+  - Cleanup of polling interval
+  - Callbacks onComplete/onError
+  - 11 comprehensive tests
+  - TypeScript implementation
 - [Will add commits during development]
 
 ---
@@ -301,4 +339,4 @@ ProgressBar.propTypes = {
 ---
 
 **Created**: 2026-01-29
-**Status**: Draft → Ready for Dev → In Progress → Complete
+**Status**: Ready for Review → Ready for Dev → In Progress → Complete
