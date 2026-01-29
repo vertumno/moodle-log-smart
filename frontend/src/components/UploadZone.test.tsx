@@ -27,7 +27,6 @@ describe('UploadZone', () => {
 
     // Simulate drag enter
     const file = new File(['test'], 'test.csv', { type: 'text/csv' });
-    const dataTransfer = { files: [file] };
 
     if (dropzone) {
       await userEvent.upload(dropzone as HTMLElement, file);

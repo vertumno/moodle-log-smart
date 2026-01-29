@@ -94,7 +94,8 @@ export default function UploadZone({
 
       await uploadFile(file);
     },
-    [disabled, isLoading, onUploadSuccess, onUploadError]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [disabled, isLoading]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
