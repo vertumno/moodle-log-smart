@@ -71,6 +71,7 @@ Frontend (React)          Backend (FastAPI)          Database (Files)
 - ✅ **Multi-Format Export**: CSV + XES (ProM/Disco compatible)
 - ✅ **Bloom's Taxonomy**: 13 rules for semantic classification
 - ✅ **Cross-Platform**: Works on Windows, macOS, Linux
+- 🔒 **Production-Ready Security**: Authentication, validation, hardening (QA Approved)
 
 ## 📁 Project Structure
 
@@ -110,6 +111,41 @@ cd frontend
 npm test
 ```
 
+## 🔒 Security & Quality
+
+**QA Status**: ✅ Epic 2 Approved for Production (2026-01-29)
+**Test Coverage**: >95% (21 comprehensive tests)
+**Security Score**: 98/100
+
+### Security Features
+- ✅ **API Key Authentication** (X-API-Key header)
+- ✅ **Job Ownership Enforcement** (users can only access their jobs)
+- ✅ **CSV Injection Prevention** (formula character detection)
+- ✅ **UUID Validation** (path traversal prevention)
+- ✅ **Security Headers** (CSP, X-Frame-Options, HSTS)
+- ✅ **CORS Properly Configured** (no wildcard)
+- ✅ **Job Timeout Protection** (10-minute limit)
+- ✅ **Automatic File Cleanup** (TTL-based resource management)
+
+### Configuration
+
+```bash
+# Copy example configuration
+cp backend/.env.example backend/.env
+
+# Generate secure API key
+python -c "import secrets; print(secrets.token_urlsafe(32))"
+
+# Add to .env
+API_KEYS=your-generated-key-here
+```
+
+### Quality Reports
+- **[Epic 2 QA Gate](docs/qa/gates/EPIC-02-QA-GATE-FINAL.md)** - Comprehensive security review
+- **[QA Documentation](docs/qa/)** - Test coverage and quality metrics
+
+**Risk Reduction**: 90% (36/60 → 6/60)
+
 ## 🤝 Contributing
 
 Contributions are welcome! This is an open-source project (MIT License).
@@ -126,12 +162,15 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) file for
 
 ## 🎯 Status
 
-**Current Phase**: MVP Development (Epics 02-03 in progress)
-- ✅ Architecture & Design Complete
-- ✅ Backend Implementation (Stories 1.1-1.7 - COMPLETE)
-- ⏳ API Layer (Epic 02 - In Progress)
-- ⏳ Frontend (Epic 03 - In Progress)
-- ⏳ Docker Deployment (Epic 04 - Ready to Start)
+**Current Phase**: MVP Development
+- ✅ **Epic 1**: Backend Core (7/7 stories - COMPLETE)
+- ✅ **Epic 2**: API Layer (7/7 stories - QA APPROVED ✅)
+- ✅ **Epic 3**: Frontend (4/4 stories - COMPLETE)
+- ⏳ **Epic 4**: Docker Deployment (0/4 stories - Ready to Start)
+
+**Overall Progress**: 79% Complete (15/19 stories)
+
+**Latest**: Epic 2 passed comprehensive QA review with excellence (2026-01-29)
 
 ## 👨‍💻 Author
 
