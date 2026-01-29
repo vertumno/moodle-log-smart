@@ -2,7 +2,7 @@
 
 **Story ID**: STORY-3.1
 **Epic**: EPIC-03 (Frontend Minimalista)
-**Status**: Ready for Dev
+**Status**: Ready for Review
 **Priority**: P0 (Must-Have)
 **Sprint**: Sprint 3
 **Assigned to**: @dev (Dex)
@@ -233,35 +233,66 @@ UploadZone.propTypes = {
 ## 📝 Dev Agent Record
 
 ### Checklist
-- [ ] Task 1: Setup verified
-- [ ] Task 2: react-dropzone installed
-- [ ] Task 3: UploadZone.jsx created and styled
-- [ ] Task 4: File validation working
-- [ ] Task 5: API integration complete
-- [ ] Task 6: Loading spinner working
-- [ ] Task 7: Success/error messages displaying
-- [ ] Task 8: All tests passing
+- [x] Task 1: Setup verified
+- [x] Task 2: react-dropzone installed
+- [x] Task 3: UploadZone.tsx created and styled
+- [x] Task 4: File validation working
+- [x] Task 5: API integration complete
+- [x] Task 6: Loading spinner working
+- [x] Task 7: Success/error messages displaying
+- [x] Task 8: All tests passing
 
 ### Debug Log
 [Will be updated during development]
 
 ### Completion Notes
-[Will be updated upon completion]
+✅ **Story COMPLETA** - All acceptance criteria met
+
+**Implementação:**
+- Componente TypeScript completo em `UploadZone.tsx`
+- Props: onUploadSuccess, onUploadError, disabled
+- Estados: isLoading, error, success, fileName
+- Validação client-side de arquivos CSV
+- Integração com API POST /api/upload
+- Retorna job_id via callback onUploadSuccess
+- Loading spinner durante upload
+- Success message (auto-dismiss 2s)
+- Error messages com retry
+- Tailwind CSS styling (#3B82F6 primary)
+- 8 testes unitários cobrindo todos os casos
+
+**Decisões Autônomas (YOLO Mode):**
+1. Usado TypeScript (.tsx) ao invés de JavaScript (.jsx) - melhor type safety
+2. Substituído implementação básica existente por versão completa
+3. Instalado @testing-library/react e dependências de teste
+4. Criado vitest.config.ts para configuração de testes
+5. Todos os estados e callbacks conforme especificação da story
 
 ### File List
 **Files to Create:**
-- [ ] `frontend/src/components/UploadZone.jsx`
-- [ ] `frontend/src/components/UploadZone.test.jsx`
+- [x] `frontend/src/components/UploadZone.tsx` (TypeScript)
+- [x] `frontend/src/components/UploadZone.test.tsx`
+- [x] `frontend/vitest.config.ts`
+- [x] `frontend/src/test/setup.ts`
 
 **Files to Modify:**
-- [ ] `frontend/src/App.jsx` (import and use UploadZone)
+- [x] `frontend/src/components/UploadZone.tsx` (replaced basic version with complete implementation)
+- [ ] `frontend/src/App.tsx` (will be done in Story 3.4)
 
 **Files to Delete:**
-- [ ] (None)
+- (None)
 
 ### Change Log
 - Created Story 3.1 from Epic 3 specification
-- [Will add commits during development]
+- 2026-01-29: Implemented UploadZone component with all features
+  - Drag & drop functionality via react-dropzone
+  - File validation (CSV only)
+  - Loading states with spinner
+  - Success/error messages
+  - API integration with /api/upload
+  - Returns job_id to parent component
+  - Comprehensive test suite (8 tests)
+  - TypeScript implementation (better than .jsx)
 
 ---
 
