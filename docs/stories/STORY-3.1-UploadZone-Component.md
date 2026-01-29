@@ -2,11 +2,12 @@
 
 **Story ID**: STORY-3.1
 **Epic**: EPIC-03 (Frontend Minimalista)
-**Status**: Draft
+**Status**: Ready for Dev
 **Priority**: P0 (Must-Have)
 **Sprint**: Sprint 3
 **Assigned to**: @dev (Dex)
 **Estimate**: 1 dia
+**Validated by**: @po (Pax) - 2026-01-29
 
 ---
 
