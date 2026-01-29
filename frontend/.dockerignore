@@ -1,0 +1,16 @@
+node_modules
+.git
+.gitignore
+dist
+build
+.env
+.env.local
+.DS_Store
+.editorconfig
+README.md
+.github
+src
+public
+index.html
+*.config.*
+package-lock.json
