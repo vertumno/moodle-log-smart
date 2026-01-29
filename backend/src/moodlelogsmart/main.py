@@ -12,10 +12,12 @@ from datetime import datetime, timedelta
 from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks, Depends, Request
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from moodlelogsmart.api.models import UploadResponse, StatusResponse, ErrorResponse
 from moodlelogsmart.api.job_manager import get_job_manager, Job
 from moodlelogsmart.api.auth import verify_api_key
+from moodlelogsmart.api.validators import validate_csv_content, validate_job_id
 
 # Try to import slowapi (optional for rate limiting)
 try:
@@ -34,6 +36,39 @@ from moodlelogsmart.core.rules.rule_engine import RuleEngine
 from moodlelogsmart.core.export.exporter import CSVExporter, XESExporter
 
 logger = logging.getLogger(__name__)
+
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    """Add security headers to all responses."""
+
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+
+        # Content Security Policy
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; "
+            "script-src 'self'; "
+            "style-src 'self' 'unsafe-inline'; "
+            "img-src 'self' data:; "
+        )
+
+        # Prevent MIME sniffing
+        response.headers["X-Content-Type-Options"] = "nosniff"
+
+        # Prevent clickjacking
+        response.headers["X-Frame-Options"] = "DENY"
+
+        # XSS Protection (legacy browsers)
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+
+        # HTTPS only (if in production)
+        if os.getenv("ENVIRONMENT") == "production":
+            response.headers["Strict-Transport-Security"] = (
+                "max-age=31536000; includeSubDomains"
+            )
+
+        return response
+
 
 # Create FastAPI app
 app = FastAPI(
@@ -68,6 +103,10 @@ app.add_middleware(
 )
 
 logger.info(f"CORS configured for origins: {ALLOWED_ORIGINS}")
+
+# Apply security headers middleware
+app.add_middleware(SecurityHeadersMiddleware)
+logger.info("Security headers middleware enabled")
 
 # Get job manager
 job_manager = get_job_manager()
@@ -126,6 +165,9 @@ async def upload_csv(
         temp_input = TEMP_DIR / f"{job_id}_input.csv"
         contents = await file.read()
 
+        # Validate CSV content (security check)
+        validate_csv_content(contents)
+
         # Validate file size (50MB limit)
         file_size_mb = len(contents) / (1024 * 1024)
         if file_size_mb > 50:
@@ -170,6 +212,9 @@ async def get_status(
     Raises:
         HTTPException: If job not found
     """
+    # Validate UUID format
+    job_id = validate_job_id(job_id)
+
     job = job_manager.get_job(job_id)
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
@@ -204,6 +249,9 @@ async def download_results(
     Raises:
         HTTPException: If job not found, not completed, or file not accessible
     """
+    # Validate UUID format
+    job_id = validate_job_id(job_id)
+
     job = job_manager.get_job(job_id)
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")

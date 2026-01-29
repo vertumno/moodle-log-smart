@@ -313,5 +313,123 @@ async def test_cleanup_old_jobs():
     assert job_manager.get_job(failed_job_id) is None
 
 
+# ============================================================================
+# Story 2.7: Security Hardening Tests
+# ============================================================================
+
+
+def test_csv_validation_rejects_formula(client):
+    """Test CSV validation rejects formulas (Story 2.7)."""
+    # CSV with formula injection attempt
+    malicious_csv = b"=1+1,normal\ndata,data"
+
+    response = client.post(
+        "/api/upload",
+        files={"file": ("evil.csv", malicious_csv, "text/csv")},
+        headers={"X-API-Key": TEST_API_KEY}
+    )
+
+    assert response.status_code == 400
+    assert "unsafe formula" in response.json()["detail"].lower()
+
+
+def test_csv_validation_rejects_non_utf8(client):
+    """Test CSV validation rejects non-UTF-8 encoding (Story 2.7)."""
+    # Invalid UTF-8 bytes
+    invalid_csv = b"\xff\xfe\xfd"
+
+    response = client.post(
+        "/api/upload",
+        files={"file": ("invalid.csv", invalid_csv, "text/csv")},
+        headers={"X-API-Key": TEST_API_KEY}
+    )
+
+    assert response.status_code == 400
+    assert "UTF-8" in response.json()["detail"]
+
+
+def test_csv_validation_rejects_empty(client):
+    """Test CSV validation rejects empty file (Story 2.7)."""
+    empty_csv = b""
+
+    response = client.post(
+        "/api/upload",
+        files={"file": ("empty.csv", empty_csv, "text/csv")},
+        headers={"X-API-Key": TEST_API_KEY}
+    )
+
+    assert response.status_code == 400
+    assert "empty" in response.json()["detail"].lower()
+
+
+def test_csv_validation_rejects_too_many_columns(client):
+    """Test CSV validation rejects excessive columns (Story 2.7)."""
+    # Create CSV with 101 columns (max is 100)
+    headers = ",".join([f"col{i}" for i in range(101)])
+    data = ",".join(["data"] * 101)
+    malicious_csv = f"{headers}\n{data}".encode('utf-8')
+
+    response = client.post(
+        "/api/upload",
+        files={"file": ("many_cols.csv", malicious_csv, "text/csv")},
+        headers={"X-API-Key": TEST_API_KEY}
+    )
+
+    assert response.status_code == 400
+    assert "Too many columns" in response.json()["detail"]
+
+
+def test_invalid_job_id_format_status(client):
+    """Test invalid job ID returns 400 in status endpoint (Story 2.7)."""
+    response = client.get(
+        "/api/status/not-a-uuid",
+        headers={"X-API-Key": TEST_API_KEY}
+    )
+
+    assert response.status_code == 400
+    assert "Invalid job ID" in response.json()["detail"]
+
+
+def test_invalid_job_id_format_download(client):
+    """Test invalid job ID returns 400 in download endpoint (Story 2.7)."""
+    response = client.get(
+        "/api/download/invalid-uuid-123",
+        headers={"X-API-Key": TEST_API_KEY}
+    )
+
+    assert response.status_code == 400
+    assert "Invalid job ID" in response.json()["detail"]
+
+
+def test_security_headers_present(client):
+    """Test security headers are added to responses (Story 2.7)."""
+    response = client.get("/health")
+
+    # Check all security headers
+    assert "X-Content-Type-Options" in response.headers
+    assert response.headers["X-Content-Type-Options"] == "nosniff"
+
+    assert "X-Frame-Options" in response.headers
+    assert response.headers["X-Frame-Options"] == "DENY"
+
+    assert "Content-Security-Policy" in response.headers
+    assert "default-src 'self'" in response.headers["Content-Security-Policy"]
+
+    assert "X-XSS-Protection" in response.headers
+    assert response.headers["X-XSS-Protection"] == "1; mode=block"
+
+
+def test_cors_configuration(client):
+    """Test CORS is properly configured (Story 2.7)."""
+    # Test with allowed origin
+    response = client.get(
+        "/health",
+        headers={"Origin": "http://localhost:3000"}
+    )
+
+    assert response.status_code == 200
+    assert "Access-Control-Allow-Origin" in response.headers
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
