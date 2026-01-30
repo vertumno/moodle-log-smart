@@ -68,6 +68,7 @@ Frontend (React)          Backend (FastAPI)          Database (Files)
 **Key Features:**
 - ✅ **Auto-Detection**: Encoding, delimiter, column mapping, timestamp format
 - ✅ **Zero Configuration**: Sensible defaults, no manual setup needed
+- ✅ **Multi-Language Support**: English and Portuguese (PT-BR) column names
 - ✅ **Multi-Format Export**: CSV + XES (ProM/Disco compatible)
 - ✅ **Bloom's Taxonomy**: 13 rules for semantic classification
 - ✅ **Cross-Platform**: Works on Windows, macOS, Linux

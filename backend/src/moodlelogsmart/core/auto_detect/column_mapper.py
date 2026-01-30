@@ -63,65 +63,120 @@ class ColumnMapper:
     """
 
     # Dictionary of known aliases for each internal column
+    # Supports both English and Portuguese (PT-BR) column names
     COLUMN_ALIASES = {
         'time': [
+            # English
             'Time',
             'Timestamp',
             'Date/Time',
             'Event time',
             'DateTime',
             'Date and time',
+            # Portuguese (PT-BR)
+            'Hora',
+            'Data/Hora',
+            'Horário',
+            'Data e hora',
         ],
         'user_full_name': [
+            # English
             'User full name',
             'Full name',
             'User name',
             'Name',
             'Username',
             'User',
+            # Portuguese (PT-BR)
+            'Nome completo',
+            'Nome',
+            'Usuário',
+            'Nome do usuário',
         ],
         'event_name': [
+            # English
             'Event name',
             'Event',
             'Action',
             'Event type',
             'Activity',
+            # Portuguese (PT-BR)
+            'Nome do evento',
+            'Evento',
+            'Ação',
+            'Tipo de evento',
+            'Atividade',
         ],
         'component': [
+            # English
             'Component',
             'Event component',
             'Module',
             'Component name',
+            # Portuguese (PT-BR)
+            'Componente',
+            'Módulo',
+            'Nome do componente',
         ],
         'event_context': [
+            # English
             'Event context',
             'Context',
             'Course',
             'Resource',
             'Activity context',
+            # Portuguese (PT-BR)
+            'Contexto do Evento',
+            'Contexto',
+            'Curso',
+            'Recurso',
+            'Contexto da atividade',
         ],
         'description': [
+            # English
             'Description',
             'Details',
             'Info',
             'Information',
             'Event description',
+            # Portuguese (PT-BR)
+            'Descrição',
+            'Detalhes',
+            'Informação',
+            'Informações',
+            'Descrição do evento',
         ],
         'affected_user': [
+            # English
             'Affected user',
             'Related user',
             'Target user',
+            # Portuguese (PT-BR)
+            'Usuário afetado',
+            'Usuário relacionado',
+            'Usuário alvo',
         ],
         'origin': [
+            # English
             'Origin',
             'Source',
             'Event origin',
+            # Portuguese (PT-BR)
+            'Origem',
+            'Fonte',
+            'Origem do evento',
         ],
         'ip_address': [
+            # English
             'IP address',
             'IP',
             'User IP',
             'Client IP',
+            # Portuguese (PT-BR)
+            'endereço IP',
+            'Endereço IP',
+            'IP do usuário',
+            'IP',
         ],
     }
 
