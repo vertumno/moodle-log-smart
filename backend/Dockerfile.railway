@@ -1,0 +1,29 @@
+# Simple Dockerfile for Railway deployment
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Poetry
+RUN pip install --no-cache-dir poetry==1.7.1
+
+# Copy project files
+COPY pyproject.toml poetry.lock* ./
+COPY src ./src
+
+# Configure Poetry and install dependencies
+RUN poetry config virtualenvs.create false \
+    && poetry install --without dev --no-interaction --no-ansi
+
+# Create necessary directories
+RUN mkdir -p /app/uploads /app/results /app/temp
+
+# Expose port (Railway will set PORT env var)
+EXPOSE 8000
+
+# Start command - Railway will provide PORT
+CMD uvicorn moodlelogsmart.api.main:app --host 0.0.0.0 --port ${PORT:-8000}
