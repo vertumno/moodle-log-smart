@@ -386,7 +386,7 @@ async def process_job(job_id: str, input_file: str) -> None:
         )
 
         column_mapper = ColumnMapper()
-        mapped_columns = column_mapper.map(df.columns.tolist())
+        mapped_columns = column_mapper.map_columns(df.columns.tolist())
         job_manager.update_progress(job_id, 30)
 
         # Step 3: Detect timestamp format
