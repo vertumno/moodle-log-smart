@@ -387,12 +387,19 @@ async def process_job(job_id: str, input_file: str) -> None:
 
         column_mapper = ColumnMapper()
         mapped_columns = column_mapper.map_columns(df.columns.tolist())
+
+        # Rename columns to internal schema
+        rename_dict = column_mapper.rename_dataframe_columns(df.columns.tolist(), mapped_columns)
+        df = df.rename(columns=rename_dict)
         job_manager.update_progress(job_id, 30)
 
         # Step 3: Detect timestamp format
         logger.info(f"Job {job_id}: Detecting timestamp format")
         timestamp_detector = TimestampDetector()
-        timestamp_format = timestamp_detector.detect(df)
+
+        # Extract timestamp column and detect format
+        timestamps = df['time'].astype(str).tolist()
+        timestamp_format = timestamp_detector.detect_format(timestamps)
         job_manager.update_progress(job_id, 40)
 
         # Step 4: Clean data
