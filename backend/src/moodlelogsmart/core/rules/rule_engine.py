@@ -2,7 +2,9 @@
 
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
+from pathlib import Path
 import logging
+import yaml
 
 logger = logging.getLogger(__name__)
 
@@ -40,9 +42,69 @@ class Rule:
 class RuleEngine:
     """Evaluates rules against events for classification."""
 
-    def __init__(self, rules: List[Rule]):
+    def __init__(self, rules: Optional[List[Rule]] = None, yaml_path: Optional[str] = None):
+        """Initialize RuleEngine with rules from list or YAML file.
+
+        Args:
+            rules: List of Rule objects (optional)
+            yaml_path: Path to YAML file with rules (optional)
+
+        If yaml_path is provided, rules are loaded from file.
+        If neither is provided, loads from default bloom_taxonomy.yaml.
+        """
+        if yaml_path:
+            self.rules = self._load_rules_from_yaml(yaml_path)
+        elif rules:
+            self.rules = sorted(rules, key=lambda r: r.priority)
+        else:
+            # Load default rules from bloom_taxonomy.yaml
+            default_path = Path(__file__).parent / 'bloom_taxonomy.yaml'
+            self.rules = self._load_rules_from_yaml(str(default_path))
+
+    def _load_rules_from_yaml(self, yaml_path: str) -> List[Rule]:
+        """Load rules from YAML file.
+
+        Args:
+            yaml_path: Path to YAML file
+
+        Returns:
+            List of Rule objects sorted by priority
+        """
+        with open(yaml_path, 'r', encoding='utf-8') as f:
+            data = yaml.safe_load(f)
+
+        rules = []
+        for rule_data in data.get('rules', []):
+            # Parse conditions
+            conditions = []
+            for cond_data in rule_data.get('conditions', []):
+                conditions.append(RuleCondition(
+                    field=cond_data['field'],
+                    operator=cond_data['operator'],
+                    value=cond_data.get('value'),
+                    values=cond_data.get('values'),
+                ))
+
+            # Parse action
+            action_data = rule_data['action']
+            action = RuleAction(
+                activity_type=action_data['activity_type'],
+                bloom_level=action_data['bloom_level'],
+                is_active=action_data.get('is_active', False),
+            )
+
+            # Create rule
+            rule = Rule(
+                id=rule_data['id'],
+                name=rule_data['name'],
+                priority=rule_data['priority'],
+                conditions=conditions,
+                action=action,
+            )
+            rules.append(rule)
+
         # Sort by priority
-        self.rules = sorted(rules, key=lambda r: r.priority)
+        return sorted(rules, key=lambda r: r.priority)
 
     def evaluate(self, event: Dict[str, Any]) -> Dict[str, Any]:
         """Evaluate event against rules and apply action.

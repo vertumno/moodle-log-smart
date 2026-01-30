@@ -1,0 +1,203 @@
+# Bloom's Taxonomy Classification Rules
+# Based on original Moodle2EventLog implementation
+# 13 rules covering all 6 cognitive levels
+
+rules:
+  # Rule 1: View Resource (Remember)
+  - id: "R01"
+    name: "View Resource"
+    priority: 1
+    conditions:
+      - field: "component"
+        operator: "in"
+        values: ["File", "Folder", "Page", "Book", "URL", "Resource"]
+      - field: "event_name"
+        operator: "contains"
+        value: "viewed"
+    action:
+      activity_type: "Study_P"
+      bloom_level: "Remember"
+      is_active: false
+
+  # Rule 2: View Course (Remember)
+  - id: "R02"
+    name: "View Course"
+    priority: 2
+    conditions:
+      - field: "event_name"
+        operator: "in"
+        values: ["Course viewed", "Curso visto"]
+    action:
+      activity_type: "Study_P"
+      bloom_level: "Remember"
+      is_active: false
+
+  # Rule 3: Forum View (Understand)
+  - id: "R03"
+    name: "Forum View Discussion"
+    priority: 3
+    conditions:
+      - field: "component"
+        operator: "equals"
+        value: "Forum"
+      - field: "event_name"
+        operator: "contains"
+        value: "viewed"
+    action:
+      activity_type: "Study_A"
+      bloom_level: "Understand"
+      is_active: false
+
+  # Rule 4: Forum Post (Create/Apply)
+  - id: "R04"
+    name: "Forum Post Created"
+    priority: 4
+    conditions:
+      - field: "component"
+        operator: "equals"
+        value: "Forum"
+      - field: "event_name"
+        operator: "in"
+        values: ["Discussion created", "Post created", "Post updated"]
+    action:
+      activity_type: "Collab_A"
+      bloom_level: "Create"
+      is_active: true
+
+  # Rule 5: Quiz Attempt (Apply)
+  - id: "R05"
+    name: "Quiz Attempt"
+    priority: 5
+    conditions:
+      - field: "component"
+        operator: "in"
+        values: ["Quiz", "Questionnaire"]
+      - field: "event_name"
+        operator: "contains"
+        value: "attempt"
+    action:
+      activity_type: "Eval_A"
+      bloom_level: "Apply"
+      is_active: true
+
+  # Rule 6: Assignment View (Understand)
+  - id: "R06"
+    name: "Assignment View"
+    priority: 6
+    conditions:
+      - field: "component"
+        operator: "equals"
+        value: "Assignment"
+      - field: "event_name"
+        operator: "contains"
+        value: "viewed"
+    action:
+      activity_type: "Study_P"
+      bloom_level: "Understand"
+      is_active: false
+
+  # Rule 7: Assignment Submission (Apply/Create)
+  - id: "R07"
+    name: "Assignment Submitted"
+    priority: 7
+    conditions:
+      - field: "component"
+        operator: "equals"
+        value: "Assignment"
+      - field: "event_name"
+        operator: "in"
+        values: ["Submission created", "Submission updated", "submitted"]
+    action:
+      activity_type: "Prod_A"
+      bloom_level: "Create"
+      is_active: true
+
+  # Rule 8: Wiki Edit (Create)
+  - id: "R08"
+    name: "Wiki Page Edited"
+    priority: 8
+    conditions:
+      - field: "component"
+        operator: "equals"
+        value: "Wiki"
+      - field: "event_name"
+        operator: "in"
+        values: ["Page created", "Page updated"]
+    action:
+      activity_type: "Collab_A"
+      bloom_level: "Create"
+      is_active: true
+
+  # Rule 9: Workshop Submission (Evaluate)
+  - id: "R09"
+    name: "Workshop Assessment"
+    priority: 9
+    conditions:
+      - field: "component"
+        operator: "equals"
+        value: "Workshop"
+      - field: "event_name"
+        operator: "contains"
+        value: "assessed"
+    action:
+      activity_type: "Eval_A"
+      bloom_level: "Evaluate"
+      is_active: true
+
+  # Rule 10: Glossary Entry (Analyze/Create)
+  - id: "R10"
+    name: "Glossary Entry Created"
+    priority: 10
+    conditions:
+      - field: "component"
+        operator: "equals"
+        value: "Glossary"
+      - field: "event_name"
+        operator: "in"
+        values: ["Entry created", "Entry updated"]
+    action:
+      activity_type: "Prod_A"
+      bloom_level: "Analyze"
+      is_active: true
+
+  # Rule 11: Database Entry (Apply)
+  - id: "R11"
+    name: "Database Entry Added"
+    priority: 11
+    conditions:
+      - field: "component"
+        operator: "equals"
+        value: "Database"
+      - field: "event_name"
+        operator: "contains"
+        value: "created"
+    action:
+      activity_type: "Prod_A"
+      bloom_level: "Apply"
+      is_active: true
+
+  # Rule 12: Chat Participation (Understand)
+  - id: "R12"
+    name: "Chat Message Sent"
+    priority: 12
+    conditions:
+      - field: "component"
+        operator: "equals"
+        value: "Chat"
+      - field: "event_name"
+        operator: "contains"
+        value: "sent"
+    action:
+      activity_type: "Collab_A"
+      bloom_level: "Understand"
+      is_active: true
+
+  # Rule 13: Default/Others (Remember)
+  - id: "R13"
+    name: "Other Activities"
+    priority: 99
+    conditions: []  # Matches anything that didn't match above
+    action:
+      activity_type: "Others"
+      bloom_level: "Remember"
+      is_active: false

@@ -32,7 +32,7 @@ from moodlelogsmart.core.auto_detect.csv_detector import CSVDetector
 from moodlelogsmart.core.auto_detect.column_mapper import ColumnMapper
 from moodlelogsmart.core.auto_detect.timestamp_detector import TimestampDetector
 from moodlelogsmart.core.clean.data_cleaner import DataCleaner
-from moodlelogsmart.core.rules.rule_engine import RuleEngine
+from moodlelogsmart.core.rules.bloom_classifier import BloomClassifier
 from moodlelogsmart.core.export.exporter import CSVExporter, XESExporter
 
 logger = logging.getLogger(__name__)
@@ -405,13 +405,17 @@ async def process_job(job_id: str, input_file: str) -> None:
         # Step 4: Clean data
         logger.info(f"Job {job_id}: Cleaning data")
         cleaner = DataCleaner()
-        cleaned_df = cleaner.clean(df, timestamp_format)
+
+        # Convert DataFrame to list of dicts for cleaner
+        events_list = df.to_dict('records')
+        cleaned_events = cleaner.clean(events_list)
+        cleaned_df = pd.DataFrame(cleaned_events)
         job_manager.update_progress(job_id, 60)
 
         # Step 5: Apply rules (Bloom's Taxonomy)
         logger.info(f"Job {job_id}: Enriching with Bloom taxonomy")
-        rule_engine = RuleEngine()
-        enriched_df = rule_engine.apply_rules(cleaned_df)
+        classifier = BloomClassifier()
+        enriched_df = classifier.apply_rules(cleaned_df)
         job_manager.update_progress(job_id, 75)
 
         # Step 6: Export results
