@@ -14,7 +14,7 @@ COPY src ./src
 
 # Install dependencies and package
 RUN poetry config virtualenvs.in-project true && \
-    poetry install --without dev
+    poetry install --without dev --no-root
 
 # Stage 2: Runtime
 FROM python:3.11-slim
@@ -37,8 +37,9 @@ COPY pyproject.toml ./
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser
 
-# Add venv to PATH
+# Add venv to PATH and set PYTHONPATH
 ENV PATH="/app/.venv/bin:$PATH"
+ENV PYTHONPATH="/app/src:$PYTHONPATH"
 ENV PYTHONUNBUFFERED=1
 
 # Create necessary directories
