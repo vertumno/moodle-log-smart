@@ -1,302 +1,424 @@
 # 🎓 MoodleLogSmart
 
-> Transform Moodle logs into semantic learning analytics using Bloom's Taxonomy
+> Transforme logs do Moodle em análises de aprendizagem semânticas usando a Taxonomia de Bloom
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Licença: MIT](https://img.shields.io/badge/Licença-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
 [![React 18+](https://img.shields.io/badge/React-18+-61DAFB.svg)](https://reactjs.org/)
+[![Status: MVP Completo](https://img.shields.io/badge/Status-MVP%20Completo-brightgreen.svg)](https://github.com/vertumno/moodle-log-smart)
 
-## 🚀 Quick Start
+## 📋 Visão Geral
 
-### Prerequisites
-- Docker & Docker Compose
-- (Optional) Python 3.11+ & Node.js 18+ for local development
+MoodleLogSmart é uma ferramenta open-source que converte logs brutos do Moodle em análises semânticas avançadas usando a Taxonomia de Bloom. Automatiza a detecção de formato, mapeamento de colunas, limpeza de dados e enriquecimento semântico com zero configuração necessária.
 
-### Start with Docker
+### Aplicação em Produção
+
+- **Frontend**: https://moodle-log-smart.vercel.app
+- **Backend API**: https://moodle-log-smart-backend.onrender.com
+- **Repositório**: https://github.com/vertumno/moodle-log-smart
+
+---
+
+## ⚡ Quick Start (3 passos)
+
+### 1. Pré-requisitos
 
 ```bash
-# Clone repository
+# Opção A: Com Docker (recomendado)
+- Docker >= 20.10
+- Docker Compose >= 2.0
+
+# Opção B: Desenvolvimento local
+- Python 3.11+
+- Node.js 18+
+- npm ou yarn
+```
+
+### 2. Clonar e Configurar
+
+```bash
+# Clone o repositório
 git clone https://github.com/vertumno/moodle-log-smart
 cd moodle-log-smart
 
-# Start backend + frontend
-docker-compose up
+# Copie o arquivo de configuração
+cp .env.example .env
 
-# Open http://localhost:3000
+# Gere uma chave API segura
+python -c "import secrets; print(secrets.token_urlsafe(32))"
+# Adicione a chave gerada em: .env → API_KEYS
 ```
 
-### Local Development
+### 3. Iniciar a Aplicação
 
-**Backend (Python)**
+#### Com Docker (Recomendado)
+```bash
+docker-compose up
+# Frontend: http://localhost:3000
+# API: http://localhost:8000/docs
+```
+
+#### Desenvolvimento Local
+
+**Backend:**
 ```bash
 cd backend
 poetry install
-poetry run uvicorn src.moodlelogsmart.api.main:app --reload
+poetry run uvicorn src.moodlelogsmart.main:app --reload --host 0.0.0.0
 ```
 
-**Frontend (Node)**
+**Frontend (novo terminal):**
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-## 📋 What It Does
+---
 
-1. **Upload** your Moodle CSV log
-2. **Auto-Detect** encoding, columns, timestamp format
-3. **Clean** data (filter by student role)
-4. **Enrich** with Bloom's Taxonomy classification
-5. **Download** results (CSV + XES for process mining)
+## ✨ Principais Funcionalidades
 
-**Input**: Raw Moodle log (CSV)
-**Output**: ZIP containing:
-- `enriched_log.csv` - All events with semantic classification
-- `enriched_log_bloom_only.csv` - Only pedagogical events
-- `enriched_log.xes` - Process mining format
-- `enriched_log_bloom_only.xes` - PM format, pedagogy only
+### 1. **Auto-Detecção Inteligente**
+- ✅ Detecta automaticamente codificação (UTF-8, ISO-8859-1, etc.)
+- ✅ Identifica delimitador (vírgula, ponto-e-vírgula, tab)
+- ✅ Mapeia colunas Moodle com fuzzy matching
+- ✅ Reconhece formato de timestamp (DD/MM/YYYY, YYYY-MM-DD, Unix, etc.)
 
-## 🏗️ Architecture
+### 2. **Limpeza e Normalização**
+- ✅ Filtra eventos por papel (apenas estudantes)
+- ✅ Remove eventos inválidos ou duplicados
+- ✅ Normaliza timestamps para ISO 8601
+- ✅ Valida consistência de dados
+
+### 3. **Enriquecimento Semântico**
+- ✅ Classifica eventos com Taxonomia de Bloom (6 níveis)
+- ✅ 13 regras semânticas customizáveis
+- ✅ Suporte para PT-BR e EN
+- ✅ Preserve contexto pedagógico
+
+### 4. **Exportação Multi-Formato**
+- ✅ CSV enriquecido com classificações
+- ✅ XES (ProM/Disco compatible) para Process Mining
+- ✅ ZIP contendo todos os formatos
+- ✅ Metadados de processamento
+
+### 5. **Segurança Produção-Ready**
+- ✅ Autenticação via API Key (X-API-Key header)
+- ✅ Validação de UUID (prevenção path traversal)
+- ✅ Prevenção de CSV injection
+- ✅ CORS configurado corretamente
+- ✅ Security headers (CSP, X-Frame-Options, HSTS)
+- ✅ Timeout de jobs (10 minutos)
+- ✅ Limpeza automática de arquivos (TTL-based)
+
+### 6. **Interface Minimalista**
+- ✅ Drag & drop para upload
+- ✅ Barra de progresso em tempo real
+- ✅ Auto-refresh de status
+- ✅ Download automático ao concluir
+- ✅ Responsiva e touch-friendly
+
+---
+
+## 🏗️ Fluxo de Funcionamento
 
 ```
-Frontend (React)          Backend (FastAPI)          Database (Files)
-  Upload CSV     →      Auto-Detection        →      Results ZIP
-  Progress Bar   →      Data Cleaning         →      CSV + XES
-  Download       →      Semantic Enrichment   →      Temporary files
+┌─────────────────────────────────────────────────────────────┐
+│                     MOODLE LOG PROCESSING                   │
+└─────────────────────────────────────────────────────────────┘
+
+  ENTRADA                  PROCESSAMENTO                 SAÍDA
+   (CSV)              (Backend FastAPI)            (ZIP contendo)
+    │                      │                           │
+    ├─→ Auto-Detecção ────→├─→ Limpeza             ├─→ CSV Enriquecido
+    │   • Encoding         │   • Filtros           │
+    │   • Delimiter        │   • Validação         ├─→ CSV Bloom Only
+    │   • Colunas          │                       │
+    │   • Timestamps    ┌──┴──→ Enriquecimento    ├─→ XES (ProM)
+    │                  │       • Bloom Rules      │
+    └──────────────────┘       • Semântica        └─→ XES Bloom Only
+                           │
+                           └──→ Export
+                               • ZIP
+
+TEMPO ESTIMADO: 5000 eventos = < 2 minutos
 ```
 
-**Key Features:**
-- ✅ **Auto-Detection**: Encoding, delimiter, column mapping, timestamp format
-- ✅ **Zero Configuration**: Sensible defaults, no manual setup needed
-- ✅ **Multi-Language Support**: English and Portuguese (PT-BR) column names
-- ✅ **Multi-Format Export**: CSV + XES (ProM/Disco compatible)
-- ✅ **Bloom's Taxonomy**: 13 rules for semantic classification
-- ✅ **Cross-Platform**: Works on Windows, macOS, Linux
-- 🔒 **Production-Ready Security**: Authentication, validation, hardening (QA Approved)
+---
 
-## 📁 Project Structure
+## 📦 Estrutura do Projeto
 
 ```
 moodle-log-smart/
-├── backend/          # Python FastAPI application
-├── frontend/         # React web interface
-├── docs/            # Documentation & specifications
-├── docker-compose.yml
+│
+├── frontend/                    # React + Vite
+│   ├── src/
+│   │   ├── components/         # UI Components
+│   │   ├── hooks/              # Custom React Hooks
+│   │   ├── services/           # API Client
+│   │   └── styles/             # Tailwind CSS
+│   ├── package.json
+│   └── Dockerfile
+│
+├── backend/                     # Python FastAPI
+│   ├── src/moodlelogsmart/
+│   │   ├── api/                # FastAPI Endpoints
+│   │   │   ├── main.py        # App initialization
+│   │   │   ├── auth.py        # Authentication
+│   │   │   ├── models.py      # Pydantic models
+│   │   │   ├── validators.py  # Input validation
+│   │   │   └── job_manager.py # Job orchestration
+│   │   │
+│   │   ├── core/               # Business Logic
+│   │   │   ├── auto_detect/   # Auto-detection engine
+│   │   │   ├── clean/         # Data cleaning
+│   │   │   ├── rules/         # Bloom classification
+│   │   │   └── export/        # Multi-format export
+│   │   │
+│   │   └── domain/             # Data models
+│   │
+│   ├── tests/                  # Test suite (>95% coverage)
+│   ├── pyproject.toml
+│   └── Dockerfile
+│
+├── docs/                        # Documentation
+│   ├── deployment/             # Deployment guides
+│   ├── architecture/           # System design
+│   ├── stories/                # User stories & specs
+│   └── qa/                     # QA reports
+│
+├── scripts/                     # Utility scripts
+├── docker-compose.yml          # Local development
+├── docker-compose.prod.yml     # Production config
 └── README.md
 ```
 
-## 📚 Documentation
+---
 
-### Development
-- **[Architecture](docs/architecture/)** - System design & diagrams
-- **[PRD](docs/PRD-MoodleLogSmart.md)** - Product requirements
-- **[Stories](docs/stories/)** - User stories & implementation specs
+## 🚀 Deployment
 
-### Deployment & Operations
-- **[Deployment Guide](docs/deployment/README.md)** - Complete deployment documentation
-  - [Docker Build Guide](docs/deployment/DOCKER-BUILD-GUIDE.md) - Build optimization & security
-  - [Deployment Guide](docs/deployment/DEPLOYMENT-GUIDE.md) - Local, server, cloud deployment
-  - [Operations Guide](docs/deployment/OPERATIONS-GUIDE.md) - Daily operations & maintenance
-  - [Security Guide](docs/deployment/SECURITY.md) - Security best practices
-  - [Troubleshooting](docs/deployment/TROUBLESHOOTING.md) - Common issues & solutions
-  - [Production Checklist](docs/deployment/PRODUCTION-CHECKLIST.md) - Pre-launch validation
+### Vercel (Frontend)
 
-## 🛠️ Development & Implementation
+```bash
+# Deployment automático via GitHub
+# Branch: main → Vercel staging
+# Tag: v*.*.* → Vercel production
+```
 
-### Epic 1: Backend Core + Auto-Detection (7 stories) ✅
-1. [STORY-1.1](docs/stories/STORY-1.1-Auto-Detection-CSV-Format.md) - CSV Auto-Detection
-2. [STORY-1.2](docs/stories/STORY-1.2-Auto-Mapping-Moodle-Columns.md) - Column Mapping
-3. [STORY-1.3](docs/stories/STORY-1.3-Auto-Detection-Timestamp-Format.md) - Timestamp Detection
-4. [STORY-1.4-1.7](docs/stories/STORY-1.4-to-1.7-Remaining-Epic01.md) - Cleaning, Enrichment, Export
+**Link**: https://moodle-log-smart.vercel.app
 
-### Epic 2: API Layer (5 stories) ✅
-5. [STORY-2.3](docs/stories/STORY-2.3-Download-Endpoint.md) - Download Endpoint
-6. [STORY-2.4](docs/stories/STORY-2.4-Job-Management.md) - Job Management
-7. [STORY-2.5](docs/stories/STORY-2.5-Authentication-Authorization.md) - Authentication & Authorization
-8. [STORY-2.6](docs/stories/STORY-2.6-File-Cleanup-Job-Timeout.md) - File Cleanup & Job Timeout
-9. [STORY-2.7](docs/stories/STORY-2.7-Security-Hardening.md) - Security Hardening
+### Render (Backend)
 
-### Epic 3: Frontend Minimalista (4 stories) ✅
-10. [STORY-3.1](docs/stories/STORY-3.1-UploadZone-Component.md) - UploadZone Component
-11. [STORY-3.2](docs/stories/STORY-3.2-ProgressBar-Component.md) - ProgressBar Component
-12. [STORY-3.3](docs/stories/STORY-3.3-DownloadButton-Component.md) - DownloadButton Component
-13. [STORY-3.4](docs/stories/STORY-3.4-Single-Page-App-Integration.md) - Single Page App Integration
+```bash
+# Deployment automático via GitHub
+# Branch: main → Render staging
+# Tag: v*.*.* → Render production
+```
 
-### Epic 4: Docker & Deployment (4 stories) ✅
-14. [STORY-4.1](docs/stories/STORY-4.1-Dockerfiles-Optimization.md) - Dockerfiles Optimization & Security
-15. [STORY-4.2](docs/stories/STORY-4.2-Docker-Compose-Production.md) - Docker Compose Production Config
-16. [STORY-4.3](docs/stories/STORY-4.3-Integration-Testing-E2E.md) - Integration Testing E2E
-17. [STORY-4.4](docs/stories/STORY-4.4-Deployment-Documentation.md) - Deployment Documentation
+**Link**: https://moodle-log-smart-backend.onrender.com
 
-### Running Tests
+**Variáveis de Ambiente Necessárias:**
+```
+PYTHON_VERSION=3.11
+API_KEYS=sua-chave-api-secreta
+UPLOAD_DIR=/tmp/uploads
+JOBS_DIR=/tmp/jobs
+MAX_FILE_SIZE_MB=50
+BLOOM_RULES_ENABLED=true
+```
+
+Veja [DEPLOYMENT.md](./DEPLOYMENT.md) para instruções completas de deployment.
+
+---
+
+## 📚 Documentação Completa
+
+### Para Desenvolvedores
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Guia de contribuição e setup local
+- **[API.md](./docs/API.md)** - Documentação completa dos endpoints
+- **[ARCHITECTURE.md](./docs/ARCHITECTURE.md)** - Diagrama e design do sistema
+
+### Para Operações
+- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Deploy em Vercel + Render
+- **[docs/deployment/](./docs/deployment/)** - Guias operacionais
+  - [DEPLOYMENT-GUIDE.md](./docs/deployment/DEPLOYMENT-GUIDE.md) - Deployment local/servidor
+  - [PRODUCTION-CHECKLIST.md](./docs/deployment/PRODUCTION-CHECKLIST.md) - Pré-launch
+  - [SECURITY.md](./docs/deployment/SECURITY.md) - Segurança
+  - [OPERATIONS-GUIDE.md](./docs/deployment/OPERATIONS-GUIDE.md) - Operações diárias
+
+### Para Produto
+- **[PRD](./docs/PRD-MoodleLogSmart.md)** - Product Requirements Document
+- **[Stories](./docs/stories/)** - User stories e especificações
+- **[PROJECT-STATUS.md](./PROJECT-STATUS.md)** - Dashboard de progresso
+
+---
+
+## 🧪 Testes
+
+### Executar Todos os Testes
 
 ```bash
 # Backend
 cd backend
-poetry run pytest tests/
+poetry run pytest tests/ -v --cov
 
 # Frontend
 cd frontend
 npm test
-```
 
-## 🔒 Security & Quality
-
-**QA Status**: ✅ Epic 2 Approved for Production (2026-01-29)
-**Test Coverage**: >95% (21 comprehensive tests)
-**Security Score**: 98/100
-
-### Security Features
-- ✅ **API Key Authentication** (X-API-Key header)
-- ✅ **Job Ownership Enforcement** (users can only access their jobs)
-- ✅ **CSV Injection Prevention** (formula character detection)
-- ✅ **UUID Validation** (path traversal prevention)
-- ✅ **Security Headers** (CSP, X-Frame-Options, HSTS)
-- ✅ **CORS Properly Configured** (no wildcard)
-- ✅ **Job Timeout Protection** (10-minute limit)
-- ✅ **Automatic File Cleanup** (TTL-based resource management)
-
-### Configuration
-
-```bash
-# Copy example configuration
-cp backend/.env.example backend/.env
-
-# Generate secure API key
-python -c "import secrets; print(secrets.token_urlsafe(32))"
-
-# Add to .env
-API_KEYS=your-generated-key-here
-```
-
-### Quality Reports
-- **[Epic 2 QA Gate](docs/qa/gates/EPIC-02-QA-GATE-FINAL.md)** - Comprehensive security review
-- **[QA Documentation](docs/qa/)** - Test coverage and quality metrics
-
-**Risk Reduction**: 90% (36/60 → 6/60)
-
-## 🤝 Contributing
-
-Contributions are welcome! This is an open-source project (MIT License).
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/your-feature`)
-3. Commit your changes (`git commit -m 'feat: add feature'`)
-4. Push to the branch (`git push origin feature/your-feature`)
-5. Open a Pull Request
-
-## 📜 License
-
-This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
-
-## 🎯 Status
-
-**Current Phase**: 🎉 **MVP COMPLETE & PRODUCTION READY**
-
-- ✅ **Epic 1**: Backend Core (7/7 stories - COMPLETE)
-- ✅ **Epic 2**: API Layer (7/7 stories - QA APPROVED ✅)
-- ✅ **Epic 3**: Frontend (4/4 stories - COMPLETE)
-- ✅ **Epic 4**: Docker & Deployment (4/4 stories - QA APPROVED ✅)
-
-**Overall Progress**: ✅ **100% Complete (20/20 stories)**
-
-**Latest**: Epic 4 completed with comprehensive deployment documentation and QA approval (2026-01-29)
-
-### MVP Features Delivered
-- ✅ Auto-detection of CSV format, encoding, columns, timestamps
-- ✅ Zero-configuration deployment with sensible defaults
-- ✅ Multi-format export (CSV + XES for process mining)
-- ✅ Bloom's Taxonomy semantic enrichment (13 rules)
-- ✅ Cross-platform support (Docker for Windows, macOS, Linux)
-- ✅ Production-ready security (authentication, validation, hardening)
-- ✅ Comprehensive deployment documentation
-- ✅ E2E integration testing framework
-- ✅ Complete operational guides
-
-### QA Status
-- ✅ All 20 stories approved by QA (Quinn)
-- ✅ All 66 acceptance criteria verified
-- ✅ Security hardening implemented and tested
-- ✅ Ready for production deployment
-
-## 🚀 Getting Started with Deployment
-
-### Quick Deployment (3 steps)
-
-```bash
-# 1. Prepare environment
-cp .env.example .env
-./scripts/generate-secrets.sh
-
-# 2. Start services
-docker-compose up -d
-
-# 3. Access application
-# Frontend: http://localhost:3000
-# API: http://localhost:8000
-```
-
-### Production Deployment
-
-See [docs/deployment/PRODUCTION-CHECKLIST.md](docs/deployment/PRODUCTION-CHECKLIST.md) for complete pre-deployment validation.
-
-## 📊 Project Metrics
-
-- **Total Stories**: 20 (100% complete)
-- **Acceptance Criteria**: 66 (100% verified)
-- **Lines of Code**: ~9,000
-- **Documentation**: ~100KB
-- **Test Coverage**: >95%
-- **Security Score**: 98/100
-
-## 🧪 Testing
-
-```bash
-# Backend tests
-cd backend
-poetry run pytest tests/
-
-# Frontend tests
-cd frontend
-npm test
-
-# E2E tests
+# E2E Integration
 ./scripts/test-e2e.sh
 ```
 
-## 🔒 Security
+### Cobertura de Testes
 
-This project has undergone comprehensive security review:
-- ✅ API authentication (X-API-Key header)
-- ✅ CSV injection prevention
-- ✅ Path traversal prevention
-- ✅ Security headers configured
-- ✅ Non-root container execution
-- ✅ Input validation throughout
-- ✅ QA approved for production
-
-See [docs/deployment/SECURITY.md](docs/deployment/SECURITY.md) for detailed security information.
-
-## 📈 Performance
-
-- **Upload**: Handles files up to 50MB
-- **Processing**: 5000 events in < 2 minutes
-- **API Response**: < 200ms average
-- **Container Memory**: Backend 1GB, Frontend 512MB
-- **Build Time**: < 5 minutes total
-
-## 👨‍💻 Author
-
-**Elton Vertumno**
-
-## 🙏 Acknowledgments
-
-Inspired by [Moodle2EventLog](https://github.com/luisrodriguez1/Moodle2EventLog) - bringing open-source and cross-platform capabilities to learning analytics.
+- **Backend**: >95% (21 testes abrangentes)
+- **Frontend**: >85% (componentes UI + hooks)
+- **E2E**: Fluxo completo upload → processing → download
 
 ---
 
-**MVP Status**: ✅ **COMPLETE & PRODUCTION READY**
+## 🔒 Segurança
 
-Last Updated: 2026-01-29 | Version: 1.0.0
+O projeto passou por revisão completa de segurança (QA Approved - 2026-01-29).
 
-For detailed API documentation, see [docs/architecture/API-SPECIFICATION.md](docs/architecture/API-SPECIFICATION.md)
+### Recursos de Segurança Implementados
+
+```
+✅ API Key Authentication (X-API-Key header)
+✅ Job Ownership Enforcement (usuários só acessam seus jobs)
+✅ UUID Validation (prevenção de path traversal)
+✅ CSV Injection Prevention (detecção de caracteres fórmula)
+✅ Security Headers (CSP, X-Frame-Options, HSTS)
+✅ CORS Properly Configured (sem wildcard)
+✅ Rate Limiting Support (pronto para middleware)
+✅ Job Timeout Protection (10 minutos)
+✅ Automatic File Cleanup (TTL-based)
+✅ Non-root Container Execution
+✅ Input Validation (todos os endpoints)
+```
+
+**Score de Segurança**: 98/100
+
+Veja [docs/deployment/SECURITY.md](./docs/deployment/SECURITY.md) para detalhes.
+
+---
+
+## 📊 Métricas do Projeto
+
+| Métrica | Valor |
+|---------|-------|
+| **Status** | ✅ MVP Completo & Production Ready |
+| **Total de Stories** | 20 (100% concluído) |
+| **Criteria de Aceitação** | 66 (100% verificado) |
+| **Linhas de Código** | ~9,000 |
+| **Documentação** | ~100KB |
+| **Cobertura de Testes** | >95% |
+| **Score de Segurança** | 98/100 |
+| **Tempo de Processamento** | < 2 min (5000 eventos) |
+
+---
+
+## 🎯 Status de Desenvolvimento
+
+### Epics Completos
+
+| Epic | Stories | Status | Data |
+|------|---------|--------|------|
+| **Epic 1** - Backend Core | 7/7 | ✅ Completo | 2026-01-25 |
+| **Epic 2** - API Layer | 7/7 | ✅ QA Aprovado | 2026-01-29 |
+| **Epic 3** - Frontend | 4/4 | ✅ Completo | 2026-01-28 |
+| **Epic 4** - Docker & Deploy | 4/4 | ✅ QA Aprovado | 2026-01-29 |
+
+**Progresso Geral**: ✅ **100% (20/20 stories)**
+
+Veja [PROJECT-STATUS.md](./PROJECT-STATUS.md) para dashboard detalhado.
+
+---
+
+## 🛠️ Stack Tecnológico
+
+### Frontend
+- **React** 18+
+- **TypeScript**
+- **Vite** (build tool)
+- **Tailwind CSS** (styling)
+- **Axios** (HTTP client)
+
+### Backend
+- **Python** 3.11+
+- **FastAPI** (web framework)
+- **Pydantic** (validation)
+- **Poetry** (dependency management)
+- **Pytest** (testing)
+
+### DevOps
+- **Docker** & Docker Compose
+- **Vercel** (Frontend hosting)
+- **Render** (Backend hosting)
+- **GitHub Actions** (CI/CD)
+
+---
+
+## 🤝 Contribuindo
+
+Contribuições são bem-vindas! Este é um projeto open-source com licença MIT.
+
+### Passos para Contribuir
+
+1. **Fork** o repositório
+2. **Clone** seu fork: `git clone https://github.com/seu-usuario/moodle-log-smart`
+3. **Crie um branch**: `git checkout -b feature/sua-feature`
+4. **Faça suas mudanças** (veja [CONTRIBUTING.md](./CONTRIBUTING.md))
+5. **Teste**: `npm test` (frontend) e `poetry run pytest` (backend)
+6. **Commit**: `git commit -m "feat: adicione sua feature"`
+7. **Push**: `git push origin feature/sua-feature`
+8. **Abra um Pull Request** no repositório original
+
+Veja [CONTRIBUTING.md](./CONTRIBUTING.md) para detalhes completos.
+
+---
+
+## 🐛 Bugs e Sugestões
+
+Encontrou um bug? Tem uma sugestão? **Abra uma issue**!
+
+- **Bug Report**: https://github.com/vertumno/moodle-log-smart/issues/new?template=bug_report.md
+- **Feature Request**: https://github.com/vertumno/moodle-log-smart/issues/new?template=feature_request.md
+
+---
+
+## 📄 Licença
+
+Este projeto está licenciado sob a **MIT License**. Veja [LICENSE](./LICENSE) para detalhes completos.
+
+---
+
+## 🙏 Agradecimentos
+
+Inspirado por [Moodle2EventLog](https://github.com/luisrodriguez1/Moodle2EventLog) - trazendo capacidades open-source e cross-platform para análise de aprendizagem.
+
+**Desenvolvido com ❤️** para educadores e pesquisadores em análise de aprendizagem.
+
+---
+
+## 👨‍💻 Autor
+
+**Elton Vertumno**
+- GitHub: [@vertumno](https://github.com/vertumno)
+- Email: elton@example.com
+
+---
+
+## 📞 Suporte
+
+- 📖 **Documentação**: [docs/](./docs/)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/vertumno/moodle-log-smart/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/vertumno/moodle-log-smart/discussions)
+- 🌐 **Aplicação**: https://moodle-log-smart.vercel.app
+
+---
+
+**Última Atualização**: 2026-01-30 | **Versão**: 1.0.0
+
+**Status**: ✅ **MVP COMPLETO & PRODUCTION READY**
