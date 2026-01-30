@@ -8,12 +8,13 @@ WORKDIR /app
 # Install Poetry
 RUN pip install --no-cache-dir poetry
 
-# Copy dependency files
+# Copy dependency files and source code
 COPY pyproject.toml poetry.lock* ./
+COPY src ./src
 
-# Install dependencies
+# Install dependencies and package
 RUN poetry config virtualenvs.in-project true && \
-    poetry install --without dev --no-root
+    poetry install --without dev
 
 # Stage 2: Runtime
 FROM python:3.11-slim
