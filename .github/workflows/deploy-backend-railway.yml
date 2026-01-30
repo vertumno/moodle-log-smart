@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - master
-    paths:
-      - 'backend/**'
-      - 'railway.json'
-      - '.github/workflows/deploy-backend-railway.yml'
 
 jobs:
   deploy:
@@ -20,13 +16,7 @@ jobs:
         run: npm install -g @railway/cli
 
       - name: Deploy to Railway
-        run: railway deploy --force
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
-      - name: Get Railway deployment URL
-        run: |
-          railway status
+        run: railway up --service backend
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
