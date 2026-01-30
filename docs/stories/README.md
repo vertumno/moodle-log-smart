@@ -53,12 +53,12 @@ Este diretório contém todas as **user stories** detalhadas do projeto, organiz
 
 | Story ID | Nome | Estimate | Status | File |
 |----------|------|----------|--------|------|
-| **STORY-4.1** | Dockerfiles Optimization & Security | 0.5 dia | 🆕 Ready | [📄](./STORY-4.1-Dockerfiles-Optimization.md) |
-| **STORY-4.2** | Docker Compose Production Config | 0.5 dia | 🆕 Ready | [📄](./STORY-4.2-Docker-Compose-Production.md) |
-| **STORY-4.3** | Integration Testing End-to-End | 1 dia | 🆕 Ready | [📄](./STORY-4.3-Integration-Testing-E2E.md) |
-| **STORY-4.4** | Deployment Documentation | 1 dia | 🆕 Ready | [📄](./STORY-4.4-Deployment-Documentation.md) |
+| **STORY-4.1** | Dockerfiles Optimization & Security | 0.5 dia | ✅ Completed | [📄](./STORY-4.1-Dockerfiles-Optimization.md) |
+| **STORY-4.2** | Docker Compose Production Config | 0.5 dia | ✅ Completed | [📄](./STORY-4.2-Docker-Compose-Production.md) |
+| **STORY-4.3** | Integration Testing End-to-End | 1 dia | ✅ Completed | [📄](./STORY-4.3-Integration-Testing-E2E.md) |
+| **STORY-4.4** | Deployment Documentation | 1 dia | ✅ Completed | [📄](./STORY-4.4-Deployment-Documentation.md) |
 
-**Total Sprint 4**: 3 dias → **3 story points** | **Status**: 🆕 Ready to Start
+**Total Sprint 4**: 3 dias → **3 story points** | **Status**: ✅ QA Approved
 
 ---
 
@@ -267,8 +267,8 @@ Examples:
 ---
 
 **Document Owner**: @sm (River)
-**Last Updated**: 2026-01-29 (Epic 4 completed & QA approved)
-**Version**: 2.0
+**Last Updated**: 2026-01-30 (All documentation updated)
+**Version**: 2.1
 **Status**: ✅ MVP COMPLETE & PRODUCTION READY
 
 *"Removendo obstáculos 🌊"*
