@@ -25,5 +25,6 @@ RUN mkdir -p /app/uploads /app/results /app/temp
 # Expose port (Railway will set PORT env var)
 EXPOSE 8000
 
-# Start command - Railway will provide PORT
+# Set Python path and start command
+ENV PYTHONPATH=/app/src
 CMD uvicorn moodlelogsmart.api.main:app --host 0.0.0.0 --port ${PORT:-8000}
