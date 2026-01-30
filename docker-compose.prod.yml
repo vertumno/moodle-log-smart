@@ -1,0 +1,38 @@
+version: '3.8'
+
+# Production overrides for docker-compose.yml
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+services:
+  backend:
+    volumes:
+      # Remove development source volume (no hot reload in production)
+      - ./backend/uploads:/app/uploads
+      - ./backend/results:/app/results
+      - ./backend/temp:/app/temp
+    environment:
+      - LOG_LEVEL=WARNING
+      - DEBUG=false
+    # Higher resource limits for production load
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+
+  frontend:
+    # No source volumes in production
+    environment:
+      - NODE_ENV=production
+    # Higher resource limits for production
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M

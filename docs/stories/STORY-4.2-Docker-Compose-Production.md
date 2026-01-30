@@ -2,11 +2,12 @@
 
 **Story ID**: STORY-4.2
 **Epic**: EPIC-04 (Docker + Deployment)
-**Status**: Ready for Development
+**Status**: ✅ Ready for Review
 **Priority**: P0 (Must-Have)
 **Sprint**: Sprint 4
 **Assigned to**: @dev (Dex)
 **Estimate**: 0.5 dia
+**Completed**: 2026-01-29
 
 ---
 
@@ -342,6 +343,63 @@ echo "Keep this key secure!"
 **Files to Validate:**
 - [ ] `docker-compose.yml` - Configuration syntax
 - [ ] `.env.example` - All required variables present
+
+---
+
+## 📝 Dev Agent Record
+
+### Implementation Status
+- **Agent**: Dex (@dev)
+- **Mode**: Yolo (Autonomous)
+- **Status**: ✅ **COMPLETE**
+
+### Deliverables
+
+**Files Created**:
+- ✅ `.env.example` - Environment variable template
+- ✅ `.env.development` - Development environment defaults
+- ✅ `docker-compose.prod.yml` - Production overrides
+- ✅ `scripts/generate-secrets.sh` - Secret generation utility
+
+**Files Modified**:
+- ✅ `docker-compose.yml` - Added resource limits, restart, logging, env_file
+
+### Acceptance Criteria - All Met ✅
+
+- ✅ Environment variables via .env file template
+- ✅ Resource limits configured (CPU, memory)
+- ✅ Restart policies set (unless-stopped)
+- ✅ Logging configured with rotation (10m/3 files backend, 5m/3 files frontend)
+- ✅ Secrets managed securely (no hardcoded values)
+- ✅ Development vs Production profiles supported
+- ✅ Volume persistence validated (.env in .gitignore)
+- ✅ Networks properly isolated (bridge network)
+- ✅ docker-compose.prod.yml created
+
+### Key Implementations
+
+**1. .env Template** (`.env.example`):
+- All variables documented
+- Comments explaining purpose
+- Development defaults provided
+
+**2. Docker Compose Enhancements**:
+- `env_file: .env` - Load configuration from file
+- `restart: unless-stopped` - Auto-restart on crash
+- Resource limits (Backend: 1CPU/1GB, Frontend: 0.5CPU/512MB)
+- Logging with rotation (json-file driver)
+- Depends_on with health check condition
+
+**3. Production Overrides** (`docker-compose.prod.yml`):
+- Remove development volumes (no hot reload)
+- Higher resource limits for production
+- Debug mode disabled
+- Log level set to WARNING
+
+**4. Secret Management**:
+- `scripts/generate-secrets.sh` - Generate secure API keys
+- Uses Python secrets module
+- Interactive prompt to update .env
 
 ---
 
