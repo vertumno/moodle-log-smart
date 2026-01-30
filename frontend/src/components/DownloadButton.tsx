@@ -55,7 +55,8 @@ export default function DownloadButton({
     }
 
     try {
-      const response = await fetch(`/api/download/${jobId}`);
+      const apiUrl = import.meta.env.VITE_API_URL || '';
+      const response = await fetch(`${apiUrl}/api/download/${jobId}`);
 
       if (!response.ok) {
         if (response.status === 404) {

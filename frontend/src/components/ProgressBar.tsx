@@ -48,7 +48,8 @@ export default function ProgressBar({
     if (!jobId) return;
 
     try {
-      const response = await fetch(`/api/status/${jobId}`);
+      const apiUrl = import.meta.env.VITE_API_URL || '';
+      const response = await fetch(`${apiUrl}/api/status/${jobId}`);
 
       if (!response.ok) {
         if (response.status === 404) {
