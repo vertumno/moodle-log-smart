@@ -56,7 +56,12 @@ export default function DownloadButton({
 
     try {
       const apiUrl = import.meta.env.VITE_API_URL || '';
-      const response = await fetch(`${apiUrl}/api/download/${jobId}`);
+      const apiKey = import.meta.env.VITE_API_KEY || '';
+      const response = await fetch(`${apiUrl}/api/download/${jobId}`, {
+        headers: {
+          'X-API-Key': apiKey,
+        },
+      });
 
       if (!response.ok) {
         if (response.status === 404) {

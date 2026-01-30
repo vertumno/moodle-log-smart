@@ -49,7 +49,12 @@ export default function ProgressBar({
 
     try {
       const apiUrl = import.meta.env.VITE_API_URL || '';
-      const response = await fetch(`${apiUrl}/api/status/${jobId}`);
+      const apiKey = import.meta.env.VITE_API_KEY || '';
+      const response = await fetch(`${apiUrl}/api/status/${jobId}`, {
+        headers: {
+          'X-API-Key': apiKey,
+        },
+      });
 
       if (!response.ok) {
         if (response.status === 404) {
