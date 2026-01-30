@@ -22,6 +22,46 @@ Este diretório contém todas as **user stories** detalhadas do projeto, organiz
 
 ---
 
+### Epic 02: API Layer (Sprint 2)
+
+| Story ID | Nome | Estimate | Status | File |
+|----------|------|----------|--------|------|
+| **STORY-2.3** | Endpoint de Download | 1 dia | ✅ Completed | [📄](./STORY-2.3-Download-Endpoint.md) |
+| **STORY-2.4** | Job Management | 1 dia | ✅ Completed | [📄](./STORY-2.4-Job-Management.md) |
+| **STORY-2.5** | Authentication & Authorization | 1 dia | ✅ Completed | [📄](./STORY-2.5-Authentication-Authorization.md) |
+| **STORY-2.6** | File Cleanup & Job Timeout | 1 dia | ✅ Completed | [📄](./STORY-2.6-File-Cleanup-Job-Timeout.md) |
+| **STORY-2.7** | Security Hardening | 1 dia | ✅ Completed | [📄](./STORY-2.7-Security-Hardening.md) |
+
+**Total Sprint 2**: 5 dias → **5 story points** | **Status**: ✅ QA Approved
+
+---
+
+### Epic 03: Frontend Minimalista (Sprint 3)
+
+| Story ID | Nome | Estimate | Status | File |
+|----------|------|----------|--------|------|
+| **STORY-3.1** | UploadZone Component | 0.5 dia | ✅ Completed | [📄](./STORY-3.1-UploadZone-Component.md) |
+| **STORY-3.2** | ProgressBar Component | 0.5 dia | ✅ Completed | [📄](./STORY-3.2-ProgressBar-Component.md) |
+| **STORY-3.3** | DownloadButton Component | 0.5 dia | ✅ Completed | [📄](./STORY-3.3-DownloadButton-Component.md) |
+| **STORY-3.4** | Single Page App Integration | 1 dia | ✅ Completed | [📄](./STORY-3.4-Single-Page-App-Integration.md) |
+
+**Total Sprint 3**: 2.5 dias → **3 story points** (arredondado)
+
+---
+
+### Epic 04: Docker + Deployment (Sprint 4)
+
+| Story ID | Nome | Estimate | Status | File |
+|----------|------|----------|--------|------|
+| **STORY-4.1** | Dockerfiles Optimization & Security | 0.5 dia | 🆕 Ready | [📄](./STORY-4.1-Dockerfiles-Optimization.md) |
+| **STORY-4.2** | Docker Compose Production Config | 0.5 dia | 🆕 Ready | [📄](./STORY-4.2-Docker-Compose-Production.md) |
+| **STORY-4.3** | Integration Testing End-to-End | 1 dia | 🆕 Ready | [📄](./STORY-4.3-Integration-Testing-E2E.md) |
+| **STORY-4.4** | Deployment Documentation | 1 dia | 🆕 Ready | [📄](./STORY-4.4-Deployment-Documentation.md) |
+
+**Total Sprint 4**: 3 dias → **3 story points** | **Status**: 🆕 Ready to Start
+
+---
+
 ## 📋 Story Structure
 
 Cada user story detalhada contém:
@@ -147,24 +187,48 @@ Use esta checklist para validar cada story antes de marcar como "Done":
 
 ## 📈 Progress Tracking
 
-### Sprint 1 Progress
+### Overall Progress
 
 ```
-Story 1.1: [██████████] 100% (✅ Completed)
-Story 1.2: [██████████] 100% (✅ Completed)
-Story 1.3: [██████████] 100% (✅ Completed)
-Story 1.4: [██████████] 100% (✅ Completed)
-Story 1.5: [██████████] 100% (✅ Completed)
-Story 1.6: [██████████] 100% (✅ Completed)
-Story 1.7: [██████████] 100% (✅ Completed)
-────────────────────────────────────────
-Total: 7/7 stories (100%) | 7.5/7.5 days
+Epic 1 (Backend):     [██████████] 100% (7/7 stories ✅)
+Epic 2 (API):         [██████████] 100% (5/5 stories ✅)
+Epic 3 (Frontend):    [██████████] 100% (4/4 stories ✅)
+Epic 4 (Deployment):  [          ]   0% (0/4 stories 🆕)
+────────────────────────────────────────────────────
+Total Progress:       [███████▓▓▓]  80% (16/20 stories)
+```
+
+### Sprint Progress
+
+**Sprint 1 - Epic 01: Backend Core** ✅ COMPLETE
+```
+Story 1.1-1.7: [██████████] 100% (7/7 stories)
+Total: 7.5 days | Status: ✅ Completed
+```
+
+**Sprint 2 - Epic 02: API Layer** ✅ QA APPROVED
+```
+Story 2.3-2.7: [██████████] 100% (5/5 stories)
+Total: 5 days | Status: ✅ QA Approved
+```
+
+**Sprint 3 - Epic 03: Frontend** ✅ COMPLETE
+```
+Story 3.1-3.4: [██████████] 100% (4/4 stories)
+Total: 2.5 days | Status: ✅ Completed
+```
+
+**Sprint 4 - Epic 04: Deployment** 🆕 READY TO START
+```
+Story 4.1-4.4: [          ]   0% (0/4 stories)
+Total: 3 days | Status: 🆕 Ready
 ```
 
 ### Velocity Metrics
-- **Target velocity**: 1.4 stories/day (7 stories / 5 days)
-- **Story points**: 7.5 days total
-- **Coverage target**: >50% (goal: 60%)
+- **Overall project**: 20 stories total, 16 completed (80%)
+- **Time invested**: ~15 days of 18 days planned (83%)
+- **Remaining**: 3 days (Epic 4 only)
+- **Target completion**: Sprint 4 (next)
 
 ---
 
@@ -202,7 +266,7 @@ Examples:
 ---
 
 **Document Owner**: @sm (River)
-**Last Updated**: 2026-01-28
-**Version**: 1.0
+**Last Updated**: 2026-01-29 (Epic 4 stories added)
+**Version**: 1.1
 
 *"Removendo obstáculos 🌊"*
